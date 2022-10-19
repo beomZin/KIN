@@ -1,0 +1,49 @@
+body {
+    min-width: 320px;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.loc {
+    display: inline-block;
+    font-size: 16.8px;
+    font-weight: bold;
+    width: 70px;
+    height: 25px;
+    letter-spacing: -0.2em;
+    position: absolute;
+    color: rgba(75, 74, 110, 0.8);
+    cursor: pointer;
+}
+
+.map_wrap {
+	width: 1000px;
+	margin : 0 auto;
+	position: relative;
+}
+
+.image_map {
+	z-index: 50;
+}
+
+.info {
+    display: inline-block;
+    font-size: 25px;
+    color: #fff;
+    position: absolute;
+    top: 126px;
+    left: -9px;
+    font-weight: 900;
+    letter-spacing: -0.2em;
+    background: darkslateblue;
+    width: 252px;
+    text-align: center;
+}
+
+.bottom {
+	background: #4b4a6e;
+	height: 130px;
+	position: relative;
+}
+

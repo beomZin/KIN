@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="st">
+
+<select id="getStaffCnt" parameterType="hashmap" resultType="Integer"  >
+	SELECT COUNT(*) AS CNT
+	FROM STAFF_INFO SI INNER JOIN U U 
+	                           ON SI.U_NO = U.U_NO
+	WHERE U.DEL_DT IS NULL
+	AND SI.KIN_NO = #{kinNo}
+	<if test="searchTxt != null and searchTxt !=''" >
+		<choose>
+		<!-- 전체 -->
+			<when test="searchGbn eq 0">
+					AND( UPPER(ID) LIKE '%' || UPPER(#{searchTxt}) || '%'
+					     OR UPPER(NM) LIKE '%' || UPPER(#{searchTxt}) || '%' 
+					     OR UPPER(EMAIL) LIKE '%' || UPPER(#{searchTxt}) || '%' 
+					     OR UPPER(CEL) LIKE '%' || UPPER(#{searchTxt}) || '%' )
+			</when>
+		<!-- 아이디 -->
+			<when test="searchGbn eq 1">
+				AND UPPER(U.ID) LIKE '%' || UPPER(#{searchTxt}) || '%' 
+			</when>
+		<!-- 이름 -->
+			<when test="searchGbn eq 2">
+				AND UPPER(U.NM) LIKE '%' || UPPER(#{searchTxt}) || '%' 
+			</when>
+		</choose>
+	</if>	
+</select>
+
+<select id="getStaffList" parameterType="hashmap" resultType="hashmap">
+	SELECT ID, NM, CEL, EMAIL, U_NO, DEL_DT
+	FROM (	SELECT U.ID, U.NM, U.CEL, U.U_NO, DEL_DT,
+				   DECODE(U.EMAIL, NULL, '미등록', U.EMAIL) AS EMAIL,
+				   ROW_NUMBER() OVER(ORDER BY U.U_NO DESC) AS RNUM
+			FROM U U INNER JOIN (SELECT DISTINCT SI.U_NO, SI.KIN_NO
+			                     FROM STAFF_INFO SI INNER JOIN SU S
+			                                                ON SI.KIN_NO = S.KIN_NO) SI
+		    	             ON U.U_NO = SI.U_NO
+			WHERE U.DEL_DT IS NULL 
+			AND SI.KIN_NO = #{kinNo}	
+			<if test="searchTxt != null and searchTxt !=''" >
+				<choose>
+				<!-- 전체 -->
+					<when test="searchGbn eq 0">
+						AND( UPPER(ID) LIKE '%' || UPPER(#{searchTxt}) || '%'
+						     OR UPPER(NM) LIKE '%' || UPPER(#{searchTxt}) || '%' 
+						     OR UPPER(EMAIL) LIKE '%' || UPPER(#{searchTxt}) || '%' 
+						     OR UPPER(CEL) LIKE '%' || UPPER(#{searchTxt}) || '%' )
+					</when>
+				<!-- 아이디 -->
+					<when test="searchGbn eq 1">
+						AND UPPER(ID) LIKE '%' || UPPER(#{searchTxt}) || '%' 
+					</when>
+				<!-- 이름 -->
+					<when test="searchGbn eq 2">
+						AND UPPER(NM) LIKE '%' || UPPER(#{searchTxt}) || '%' 
+					</when>
+				</choose>
+			</if>	)
+	WHERE RNUM BETWEEN #{start} AND #{end}
+</select>
+
+<select id="insertStaff" parameterType="hashmap" >
+	INSERT ALL
+	INTO U(U_NO, ID, PW, NM, CEL, U_TP)
+	VALUES (U_SEQ.NEXTVAL, #{id}, #{pw}, #{nm}, #{cel}, 2)
+	INTO STAFF_INFO(U_NO, KIN_NO)
+	VALUES (U_SEQ.NEXTVAL, #{kinNo})
+	SELECT *
+	FROM DUAL
+</select>
+
+<select id="deleteStaff" parameterType="hashmap">
+	UPDATE U SET DEL_DT = SYSDATE
+	WHERE U_NO IN(${chkStaff}) 
+</select>
+</mapper>

@@ -1,0 +1,128 @@
+input[type=button] {
+	cursor:pointer;
+}
+
+.p {
+	display: block;
+	width: 1100px;
+	height: 100%;
+	font-family: 맑은고딕, "Malgun Gothic", dotum, gulim, sans-serif;
+	text-align: center;
+	margin: 0 auto;
+	position: relative;
+	min-height: 800px;
+}
+
+.title {
+	height: 30px;
+	line-height: 30px;
+	margin: 20px 20px 20px 60px;
+	color: #262626;
+	font-size: 22.4px;
+	font-weight: bold;
+	letter-spacing: -.05em;
+	display: block;
+	float: left;
+}
+
+.boxBtn {
+	display: inline-block;
+	vertical-align: top;
+	line-height: 30px;
+	height: 40px;
+	width: 100px;
+	border: 1px solid #8F8EBF;
+	background-color: #4F4D8C;
+	border-radius: 5px;
+	color: #f1f1f1;
+	font-size: 15.4px;
+	font-weight: bold;
+	text-align: center;
+	margin : 25px 0 10px 0;
+}
+
+.boxBtn:hover {
+	border: 1px solid #4F4D8C;
+	background-color: #e1e1fb;
+	color: #262626;
+}
+
+.btnWrap {
+	display: block;
+	text-align: right;
+	margin-right: 50px;
+}
+
+
+.GBN {
+	opacity: 0.6;
+	letter-spacing: -.1em;
+	font-size: 12px;
+	position : absolute;
+	right: 5%;
+    top: 10px;
+}
+
+.inqWrap, .inqHead {
+	display: block;
+	margin : 0 auto;
+	width: 1100px;
+	position: relative;
+}
+
+.inqWrap {
+	min-height: 300px;
+    box-shadow : 1px 1px 4px 1px #e1e1fb;
+    margin-bottom: 40px;
+}
+
+.inqHead {
+	height: 40px;
+	border-bottom: 2px solid #f1f1f1;
+}
+
+.inqTitle {
+	display : inline-block;
+	vertical-align: top;
+	position: absolute;
+	top:0;
+	left:0;
+	width: 700px;
+	height: 40px;
+	line-height: 40px;
+	font-size: 15.4px;
+	text-align: left;
+	text-indent: 20px;
+	font-weight: bold;
+}
+
+.inqDate {
+	display : inline-block;
+	vertical-align: top;
+	position: absolute;
+	top:0;
+	right:0;
+	width: 200px;
+	height: 40px;
+	line-height: 40px;
+	font-size: 15.4px;
+	text-align: center;
+	padding-right: 10px;
+}
+
+.inqCont {
+	display: inline-block;
+	min-height: 300px;
+	width: 80%;
+	vertical-align: top;
+	text-align: left;
+	font-size: 14px;
+	line-height: 40px;
+	white-space: pre-wrap;
+}
+
+.bottom {
+	display: block;
+	background: #4b4a6e;
+	height: 150px;
+}

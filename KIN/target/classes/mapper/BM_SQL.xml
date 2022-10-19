@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bm">
+	<select id="getBMCnt" parameterType="hashmap" resultType="Integer" >
+		SELECT COUNT(*) AS CNT
+		FROM BM
+		WHERE U_NO = #{uNo}
+	</select>
+	
+	<select id="getBMList" parameterType="hashmap" resultType="hashmap" >
+		SELECT A.U_NO, A.KIN_NO, A.REG_DT, A.KIN_NM, A.DIS_NM, A.AVG
+		FROM (SELECT B.U_NO, B.KIN_NO, K.KIN_NM, D.DIS_NM,
+		            TO_CHAR(B.REG_DT, 'YY-MM-DD') AS REG_DT,
+		            TO_CHAR(NVL(F.AVG, '0'),'9.9') AS AVG,
+		            ROW_NUMBER() OVER(ORDER BY B.REG_DT DESC) AS RNUM
+		      FROM BM B INNER JOIN KIN K
+		                        ON B.KIN_NO = K.KIN_NO
+		                INNER JOIN DIS D
+		                        ON K.DIS_NO = D.DIS_NO
+		           LEFT OUTER JOIN (SELECT KIN_NO, AVG(RATE) AS AVG
+		                            FROM FB
+		                            WHERE DEL_DT IS NULL
+		                            GROUP BY KIN_NO) F
+		                        ON K.KIN_NO = F.KIN_NO) A
+		WHERE A.U_NO = #{uNo}
+		AND RNUM BETWEEN #{start} AND #{end}	
+	</select>
+	
+	<delete id="deleteKin" parameterType="hashmap" >
+		DELETE FROM BM 
+		WHERE U_NO = #{uNo}
+		AND KIN_NO = #{del}
+	</delete>
+	
+	<insert id="insertKin" parameterType="hashmap"  >
+		INSERT INTO BM(U_NO, KIN_NO)
+		VALUES(#{uNo}, #{kinNo})
+	</insert>
+</mapper>

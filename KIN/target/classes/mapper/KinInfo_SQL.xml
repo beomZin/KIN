@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kin">
+
+	<select id="getKinCnt" parameterType="hashmap" resultType="Integer">
+		SELECT COUNT(*) AS CNT
+		  FROM (SELECT A.KIN_NO, A.KIN_NM, A.KIN_ADDR, A.E_TP, A.AFT_LSN_CNT, A.SPE_CL_CNT, A.SBUS_OPER_YN
+                FROM (SELECT K.KIN_NO, K.KIN_NM, K.KIN_ADDR, K.E_TP, E.AFT_LSN_CNT, P.SPE_CL_CNT, I.SBUS_OPER_YN
+                      FROM KIN K INNER JOIN EDU E
+                                         ON K.KIN_NO = E.KIN_NO
+                                 INNER JOIN PP P
+                                         ON K.KIN_NO = P.KIN_NO
+                                 INNER JOIN INFO I
+                                         ON K.KIN_NO = I.KIN_NO
+                      WHERE 1 = 1
+				       <if test="searchTxt != null and searchTxt != ''">
+				      	 <choose>
+				      	 	<when test="searchGbn eq 0">
+						       AND K.KIN_NM LIKE '%' || #{searchTxt} || '%'
+				      		 </when>
+				      		 <when test="searchGbn eq 1">
+						       AND K.KIN_ADDR LIKE '%' || #{searchTxt} || '%'
+				      	 	</when>
+				      	 </choose>
+				       </if>) A
+			WHERE 1 = 1
+			<if test="etp eq 1">
+				AND A.E_TP = 0
+			</if>
+			<if test="etp eq 2">
+				AND A.E_TP = 1
+			</if>
+			<if test="aft eq 3">
+				AND A.AFT_LSN_CNT > 0
+			</if>
+			<if test="spe eq 4">
+				AND A.SPE_CL_CNT > 0
+			</if>
+			<if test="sbus eq 5">
+				AND A.SBUS_OPER_YN = 0
+			</if>
+	        )A
+	</select>
+	
+	<!-- 목록 -->
+	<select id="getKinList" parameterType="hashmap" resultType="hashmap">
+		SELECT A.KIN_NO, A.KIN_NM, A.KIN_ADDR, A.E_TP, A.E_DT, A.AVG, A.AFT_LSN_CNT, A.SPE_CL_CNT, A.SBUS_OPER_YN
+				 <if test="uNo != null and uNo != ''">
+				, A.U_NO
+				</if>
+		FROM (SELECT A.KIN_NO, A.KIN_NM, A.KIN_ADDR, A.E_TP, A.E_DT, A.AVG, A.AFT_LSN_CNT, A.SPE_CL_CNT, A.SBUS_OPER_YN,
+                     ROW_NUMBER() OVER(ORDER BY A.KIN_NO ASC) AS RNUM
+                      <if test="uNo != null and uNo != ''">
+                     , A.U_NO
+                      </if>
+              FROM (SELECT K.KIN_NO, K.KIN_NM, K.KIN_ADDR, K.E_TP, E.AFT_LSN_CNT, P.SPE_CL_CNT, I.SBUS_OPER_YN,
+                           TO_CHAR(K.E_DT, 'YYYY-MM-DD') || ' 설립' AS E_DT,
+                           TO_CHAR(NVL(F.AVG, '0'),'9.9') AS AVG
+                            <if test="uNo != null and uNo != ''">
+                           , B.U_NO
+                           </if>
+                    FROM KIN K INNER JOIN EDU E
+                                       ON K.KIN_NO = E.KIN_NO
+                               INNER JOIN PP P
+                                       ON K.KIN_NO = P.KIN_NO
+                               INNER JOIN INFO I
+                                       ON K.KIN_NO = I.KIN_NO
+                          LEFT OUTER JOIN (SELECT KIN_NO, AVG(RATE) AS AVG
+                                           FROM FB
+                                           WHERE DEL_DT IS NULL
+                                           GROUP BY KIN_NO) F
+                                       ON K.KIN_NO = F.KIN_NO
+                          <if test="uNo != null and uNo != ''">
+						  LEFT OUTER JOIN BM B 
+                                       ON K.KIN_NO = B.KIN_NO
+                                      AND U_NO = #{uNo}
+                          </if>
+                     WHERE 1 = 1
+				      <if test="searchTxt != null and searchTxt != ''">
+				      	<choose>
+				      		<when test="searchGbn eq 0">
+						      AND K.KIN_NM LIKE '%' || #{searchTxt} || '%'
+				      		</when>
+				      		<when test="searchGbn eq 1">
+						      AND K.KIN_ADDR LIKE '%' || #{searchTxt} || '%'
+				      		</when>
+				      	</choose>
+				      </if>) A
+			WHERE 1 = 1
+				<if test="etp eq 1">
+					AND A.E_TP = 0
+				</if>
+				<if test="etp eq 2">
+					AND A.E_TP = 1
+				</if>
+				<if test="aft eq 3">
+					AND A.AFT_LSN_CNT > 0
+				</if>
+				<if test="spe eq 4">
+					AND A.SPE_CL_CNT > 0
+				</if>
+				<if test="sbus eq 5">
+					AND A.SBUS_OPER_YN = 0
+				</if>
+            )A
+		WHERE A.RNUM BETWEEN #{start} AND #{end}
+	</select>
+	
+	<!-- 상세-요약 -->
+	<select id="getKin" parameterType="hashmap" resultType="hashmap">
+		SELECT K.KIN_NO, K.KIN_NM, 
+		       DECODE(K.E_TP, 0,'공립', 1, '사립') AS E_TP,
+		       TO_CHAR(K.E_DT, 'YYYY-MM-DD') AS E_DT,
+		       TO_CHAR(K.O_DT,'YYYY-MM-DD') AS O_DT,
+		       TO_CHAR(NVL(F.AVG, '0'),'9.9') AS AVG,
+		       K.HP, K.KIN_ADDR
+		FROM KIN K LEFT OUTER JOIN (SELECT KIN_NO, AVG(RATE) AS AVG
+		                            FROM FB
+		                            WHERE DEL_DT IS NULL
+		                            GROUP BY KIN_NO) F
+		                        ON K.KIN_NO = F.KIN_NO
+		WHERE K.KIN_NO = #{no}
+	</select>
+	
+	<!-- 상세-기본현황 -->
+	<select id="getInfo" parameterType="hashmap" resultType="hashmap">
+		SELECT KIN_NO, EDU_OF, CLR_CNT,
+		       DECODE(SBUS_OPER_YN, 0, '운영', 1, '미운영') AS SBUS_YN,
+		       ARCH_YR, BLDG_FLR_CNT,
+		       TO_CHAR(BLDG_PV_AR, '999,999,999') AS BLDG_PV_AR,
+		       TO_CHAR(GRO_T_AR, '999,999,999') AS GRO_T_AR
+		FROM INFO
+		WHERE KIN_NO = #{no}
+	</select>
+	
+	<!-- 상세-영유아 -->
+	<select id="getPp" parameterType="hashmap" resultType="hashmap">
+		SELECT KIN_NO, APPR_CNT,
+		       DECODE(AGE3_CL_CNT, NULL, '-', AGE3_CL_CNT) AS AGE3_CL_CNT,
+		       DECODE(AGE4_CL_CNT, NULL, '-', AGE4_CL_CNT) AS AGE4_CL_CNT,
+		       DECODE(AGE5_CL_CNT, NULL, '-', AGE5_CL_CNT) AS AGE5_CL_CNT,
+		       DECODE(MIX_CL_CNT, NULL, '-', MIX_CL_CNT) AS MIX_CL_CNT,
+		       DECODE(SPE_CL_CNT, NULL, '-', SPE_CL_CNT) AS SPE_CL_CNT,
+		       DECODE(AGE3_PP_CNT, NULL, '-', AGE3_PP_CNT) AS AGE3_PP_CNT,
+		       DECODE(AGE4_PP_CNT, NULL, '-', AGE4_PP_CNT) AS AGE4_PP_CNT,
+		       DECODE(AGE5_PP_CNT, NULL, '-', AGE5_PP_CNT) AS AGE5_PP_CNT,
+		       DECODE(MIX_PP_CNT, NULL, '-', MIX_PP_CNT) AS MIX_PP_CNT,
+		       DECODE(SPE_PP_CNT, NULL, '-', SPE_PP_CNT) AS SPE_PP_CNT,
+		       (DECODE(AGE3_PP_CNT, NULL, '0', AGE3_PP_CNT)
+		       + DECODE(AGE4_PP_CNT, NULL, '0', AGE4_PP_CNT)
+		       + DECODE(AGE5_PP_CNT, NULL, '0', AGE5_PP_CNT)
+		       + DECODE(MIX_PP_CNT, NULL, '0', MIX_PP_CNT)
+		       + DECODE(SPE_PP_CNT, NULL, '0', SPE_PP_CNT)) AS SUM_PP
+		FROM PP
+		WHERE KIN_NO = #{no}
+	</select>
+	
+	<!-- 상세-교직원 -->
+	<select id="getStaff" parameterType="hashmap" resultType="hashmap">
+		SELECT KIN_NO, SU_CNT, ASSD_CNT, HEADT_CNT, SPET_CNT, HTT_CNT, DIETT_CNT, OF_CNT, T_CNT,
+		       HEADT_QLF_CNT, SRT_1GR_QLF_CNT, SRT_2GR_QLF_CNT, JRT_QLF_CNT,
+		       TCNT_UNDER1, TCNT_OVER1_UNDER2, TCNT_OVER2_UNDER4, TCNT_OVER4_UNDER6, TCNT_OVER6,
+		       (SU_CNT + ASSD_CNT + HEADT_CNT + SPET_CNT + HTT_CNT + DIETT_CNT + OF_CNT + T_CNT) AS SUM_TCNT
+		FROM STAFF
+		WHERE KIN_NO = #{no}
+	</select>
+	
+	<!-- 비교 상세-교직원 (평균근속연수) -->
+	<select id="getAvgYr" parameterType="hashmap" resultType="hashmap" >
+		SELECT A.KIN_NO, CASE WHEN TCNT > 0
+		                      THEN ROUND((TCNT1 + TCNT12 + TCNT24 + TCNT46 + TCNT6)/ TCNT)
+		                      ELSE 0
+		                      END AS AVG_YR
+		FROM (SELECT K.KIN_NO, TCNT_UNDER1 * 0.5 AS TCNT1, TCNT_OVER1_UNDER2 * 1.5 AS TCNT12, TCNT_OVER2_UNDER4 * 3 AS TCNT24,
+		             TCNT_OVER4_UNDER6 * 5 AS TCNT46, TCNT_OVER6 * 6 AS TCNT6,
+		             (TCNT_UNDER1 + TCNT_OVER1_UNDER2 + TCNT_OVER2_UNDER4 + TCNT_OVER4_UNDER6 + TCNT_OVER6) AS TCNT
+		      FROM STAFF S INNER JOIN KIN K
+		                           ON S.KIN_NO = K.KIN_NO) A
+		WHERE A.KIN_NO = #{no}
+	</select>
+	
+	<!-- 비교 - 영유아 (학급별영유아) -->
+	<select id="getAvgPP" parameterType="hashmap" resultType="hashmap">
+		SELECT CASE WHEN AGE3_PP_CNT > 0
+		            THEN ROUND((AGE3_PP_CNT/AGE3_CL_CNT))
+		            ELSE AGE3_PP_CNT
+		            END AS AGE3_AVG, 
+		       CASE WHEN AGE4_PP_CNT > 0
+		            THEN ROUND((AGE4_PP_CNT/AGE4_CL_CNT))
+		            ELSE AGE4_PP_CNT
+		            END AS AGE4_AVG, 
+		       CASE WHEN AGE5_PP_CNT > 0
+		       THEN ROUND((AGE5_PP_CNT/AGE5_CL_CNT))
+		       ELSE AGE5_PP_CNT
+		       END AS AGE5_AVG
+		FROM PP
+		WHERE KIN_NO = #{no}
+	</select>
+	
+	<!-- 상세-교육/보육과정 -->
+	<select id="getEdu" parameterType="hashmap" resultType="hashmap">
+		SELECT KIN_NO, OPER_TIME,
+			   TO_CHAR(AFT_ST_TIME, 'HH24:MI') AS AFT_ST_TIME, TO_CHAR(AFT_END_TIME, 'HH24:MI') AS AFT_END_TIME,
+		       RARR_CL_CNT, IND_CL_CNT, (RARR_CL_CNT + IND_CL_CNT) AS SUM_CL_CNT,
+		       RARR_PP_CNT, IND_PP_CNT, (RARR_PP_CNT + IND_PP_CNT) AS SUM_PP_CNT,
+		       PTT_CNT, FTT_CNT, INS_CNT, (PTT_CNT + FTT_CNT + INS_CNT) AS SUM_TCNT,
+		       AGE3_LSN_CNT, AGE4_LSN_CNT, AGE5_LSN_CNT, MIX_LSN_CNT, SPE_LSN_CNT, AFT_LSN_CNT
+		FROM EDU
+		WHERE KIN_NO = #{no}
+	</select>
+	
+	<!-- 비교 - 교육/보육과정 -->
+	<select id="compareEdu" parameterType="hashmap" resultType="hashmap" >
+		SELECT E.KIN_NO, TO_CHAR(E.AFT_ST_TIME, 'HH24:MI') AS AFT_ST_TIME, TO_CHAR(E.AFT_END_TIME, 'HH24:MI') AS AFT_END_TIME,
+		        E.AFT_LSN_CNT, E.AGE3_LSN_CNT, E.AGE4_LSN_CNT, E.AGE5_LSN_CNT,  
+		        CASE WHEN C.CNT > 0 THEN ROUND((E.AGE3_LSN_CNT + E.AGE4_LSN_CNT + E.AGE5_LSN_CNT)/C.CNT) ELSE 0 END AS LSN_CNT_AVG
+		FROM EDU E INNER JOIN ( SELECT KIN_NO, SUM(CNT1 + CNT2 + CNT3) AS CNT
+		                        FROM (SELECT COUNT(CASE WHEN AGE3_LSN_CNT != 0 THEN 1 END) AS CNT1,
+	                                    COUNT(CASE WHEN AGE4_LSN_CNT != 0 THEN 1 END) AS CNT2,
+	                                    COUNT(CASE WHEN AGE5_LSN_CNT != 0 THEN 1 END) AS CNT3, 
+	                                    KIN_NO
+		                              FROM EDU
+		                              GROUP BY KIN_NO)
+	                            GROUP BY KIN_NO) C
+		                   ON E.KIN_NO = C.KIN_NO
+		WHERE E.KIN_NO = #{no}
+	</select>
+	
+	<!-- 상세-안전점검 -->
+	<select id="getSafe" parameterType="hashmap" resultType="hashmap">
+		SELECT KIN_NO, DECODE(EVA_YN, 0, '실시', '미실시') AS EVA_YN, DECODE(EVA_DT, NULL, '-', TO_CHAR(EVA_DT, 'YYYY-MM-DD')) AS EVA_DT,
+		       DECODE(GAS_CHK_YN, 0, '실시', '미실시') AS GAS_YN, DECODE(GAS_CHK_DT, NULL, '-', TO_CHAR(GAS_CHK_DT, 'YYYY-MM-DD')) AS GAS_DT,
+		       DECODE(FIRE_CHK_YN, 0, '실시', '미실시') AS FIRE_YN, DECODE(FIRE_CHK_DT, NULL, '-', TO_CHAR(FIRE_CHK_DT, 'YYYY-MM-DD')) AS FIRE_DT,
+		       DECODE(ELEC_CHK_YN, 0, '실시', '미실시') AS ELEC_YN, DECODE(ELEC_CHK_DT, NULL, '-', TO_CHAR(ELEC_CHK_DT, 'YYYY-MM-DD')) AS ELEC_DT,
+		       DECODE(CCTV_YN, 0, '설치', '미설치') AS CCTV_YN, CCTV_CNT, CCTV_IN_CNT, CCTV_OUT_CNT
+		FROM SAFE
+		WHERE KIN_NO = #{no}
+	</select>
+	
+	<!-- 상세-영양 -->
+	<select id="getDiet" parameterType="hashmap" resultType="hashmap">
+		SELECT KIN_NO,
+		       DECODE(ML_OPER_TP, 0, '직영', 1, '혼합',2, '공동',3, '위탁') AS ML_OPER_TP,
+		       DECODE(CONTR_NM, NULL, '-', CONTR_NM) AS CONTR_NM,
+		       PP_CNT, ML_PP_CNT, 
+		       DECODE(DIETT_YN, 0, 'O', 'X') AS DIETT_YN,
+		       IND_DIETT_CNT, CO_DIETT_CNT, CK_CNT, CM_CNT,
+		       (CK_CNT + CM_CNT) AS SUM_CNT,
+		       DECODE(ML_DCLR_YN, 0, '신고', 1, '미신고', 2, '해당사항 없음') AS ML_DCLR_YN
+		FROM DIET
+		WHERE KIN_NO = #{no}
+	</select>
+
+	<!-- 상세-위생 -->
+	<select id="getSani" parameterType="hashmap" resultType="hashmap">
+		SELECT KIN_NO,
+		       DECODE(UNWT_CHK_RES, NULL, '-', 0, '적합', 1, '부적합', '-') AS UNWT_CHK_RES, DECODE(UNWT_CHK_YN, NULL, '-', 0, '실시', 1, '미실시') AS UNWT_CHK_YN,
+		       DECODE(AIR_CHK_RES, NULL, '-', 0, '적합', 1, '부적합', '-') AS AIR_CHK_RES, DECODE(AIR_CHK_DT, NULL, '-', TO_CHAR(AIR_CHK_DT, 'YYYY-MM-DD')) AS AIR_DT,
+		       DECODE(MIC_CHK_RES, NULL, '-', 0, '적합', 1, '부적합', '-') AS MIC_CHK_RES, DECODE(MIC_CHK_DT, NULL, '-', TO_CHAR(MIC_CHK_DT, 'YYYY-MM-DD')) AS MIC_DT,
+		       DECODE(ILMN_CHK_RES, NULL, '-', 0, '적합', 1, '부적합', '-') AS ILMN_CHK_RES, DECODE(ILMN_CHK_DT, NULL, '-', TO_CHAR(ILMN_CHK_DT, 'YYYY-MM-DD')) AS ILMN_DT,
+		       DECODE(DSNF_CHK_RES, NULL, '-', 0, '적합', 1, '부적합', '-') AS DSNF_CHK_RES, DECODE(DSNF_CHK_DT, NULL, '-', TO_CHAR(DSNF_CHK_DT, 'YYYY-MM-DD')) AS DSNF_DT,
+		       DECODE(DSNF_FCL_YN, NULL, '-', 0, '실시', 1, '미실시') AS DSNF_FCL_YN
+		FROM SANI
+		WHERE KIN_NO = #{no}
+	</select>
+	
+	<!-- 비교-위생(정기소독) -->
+	<select id="compareSani"  parameterType="hashmap" resultType="hashmap" >
+		SELECT KIN_NO, 
+		       NVL2(DSNF_CHK_RES, '실시', '-') AS DSNF_YN,
+		       DECODE(DSNF_CHK_RES, NULL, '-', 0, '적합', 1, '부적합', '-') AS DSNF_CHK_RES, 
+		       DECODE(DSNF_CHK_DT, NULL, '-', TO_CHAR(DSNF_CHK_DT, 'YYYY-MM-DD')) AS DSNF_DT        
+		FROM SANI
+		WHERE KIN_NO =#{no}
+	</select>
+</mapper>

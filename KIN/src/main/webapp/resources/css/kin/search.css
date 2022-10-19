@@ -1,0 +1,259 @@
+body {
+    min-width: 320px;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+div {
+    display: block;
+    padding: 0;
+}
+
+.t {
+    border-collapse: collapse;
+    display: inline-table;
+    font-size: 15.4px;
+    color: #808080;
+}
+
+.t td {
+   border-bottom: 1px solid #f1f1f1;
+   height: 40px;
+}
+
+.t tr td:nth-child(2) {
+   text-align: left;
+   padding: 0px 20px;
+}
+
+.t tr {
+	cursor: pointer;
+}
+
+.rate {
+	height: 20px;
+	margin-top: 5px;
+	margin-right: -20px;
+}
+
+.etp0 {
+	border: 1px solid #4285f4;
+	color: #4285f4;
+}
+
+.etp1 {
+	border: 1px solid #f1c232;
+	color: #f1c232;
+}
+
+.bg {	
+    background-image: url("../../images/kin/bg.jpg");
+    background-repeat: no-repeat;
+    background-position: bottom;
+}
+
+.p {
+    width: 1100px;
+    margin: 0 auto;
+    background-color: #fff;
+    min-height: 700px;
+    position: relative;
+    text-align: center;
+    padding-top: 30px;
+}
+
+.kinder {
+    position: relative;
+    width: 1000px;
+    min-height: 300px;
+    margin: 0 auto;
+    vertical-align: top;
+    text-align: center;
+    color: #262626;
+}
+
+.kin_title {
+    float: left;
+	font-size: 22.4px;
+	font-weight: bold;
+    margin: 30px 10px 20px;    
+}
+
+.kin_emp_wrap {
+    display: inline-block;
+    vertical-align: top;
+    font-size: 0px;
+	min-height: 200px;
+    width: 978px;
+    margin: 0px 10px;
+    background-color: #ebf6ff;
+    border-top: 2px solid #8db5f1;
+    line-height: 120px;
+}
+
+.kin_list_wrap {
+    display: inline-block;
+    vertical-align: top;
+    font-size: 0;
+	min-height: 300px;	
+    width: 978px;
+    margin: 0px 10px;
+    background-color: #ebf6ff;
+    border-top: 2px solid #8db5f1;
+}
+
+.kin_list {
+    margin: 20px;
+    display: inline-block;
+    width: 448px;
+    height: 220px;
+    vertical-align: top;
+}
+
+.kin_emp_txt {
+	height: 200px;
+	font-size: 16.8px;
+	font-weight: bold;
+    color: #262626;
+}
+
+.kin_more {
+    margin: 5px 40px;
+    font-size: 14px;
+    float: right;
+    font-weight: bold;
+    color: #808080;
+    cursor: pointer;
+}
+
+.kin_tb td{
+    height: 44px;
+}
+
+.board {
+    display: inline-block;
+    width: 1000px;
+    margin: 50px auto;
+    vertical-align: top;
+    text-align: left;
+    font-size: 0;
+}
+
+.brd_div {
+    display: inline-block;
+    vertical-align: top;
+    width: 470px;
+    height: 330px;
+    color: #262626;
+    text-align: center;
+}
+
+.brd_title {
+    font-size: 22.4px;
+    font-weight: bold;
+    color : #262626;
+    margin: 10px auto;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.brd_list {
+    padding: 10px 30px;
+	border-top: 2px solid #8db5f1;
+	min-height: 300px;
+}
+
+.brd_tb {
+    font-size: 14px;
+    width: 100%;
+}
+
+.brd_more {
+    margin: 10px 0px;
+    font-size: 17px;
+    color: #ff9900;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.GBN {
+    opacity: 0.6;
+    letter-spacing: -.1em;
+    font-size: 12px;
+    position : absolute;
+    right: 5%;
+    top: 1%;
+ }
+ 
+.search {
+    position: relative;
+    width: 1000px;
+    height: 80px;
+    margin: 20px auto 0px;
+}
+ 
+.search_b_wrap {
+	border: 1px solid #e1e1fb;
+	height: 80px;
+	font-size: 0;
+	vertical-align: top;
+	margin-top: 50px;
+	text-align: center;
+}
+
+.search_b {
+	margin: 20px 0px;
+    width: 400px;
+    height: 40px;
+    border: 1px solid #fff;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    line-height: 40px;
+    display: inline-block;
+   	vertical-align: top;
+   	background-color: #f1f1f1;
+}
+
+.select_b {
+	border: 1px solid #fff;
+    height: 42px;
+    font-size: 15.4px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    margin: 20px 0px;
+    vertical-align: top;
+    width: 100px;
+    text-align: center;
+    background-color: #f1f1f1;
+}
+
+.search_btn {
+	margin: 21px 10px;
+	height: 40px;
+	width: 80px;
+	display: inline-block;
+	background-color: #4F4D8C;
+	color: #f1f1f1;
+    font-size: 15.4px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 2px;
+    line-height: 40px;
+    cursor: pointer;
+}
+
+.b_txt {
+    width: 350px;
+    height: 40px;
+    border: none;
+    padding : 0px;
+    outline: 0;
+    font-size: 15.4px;
+    background-color: transparent;
+}
+ 
+ .bottom {
+	background: #4b4a6e;
+	height: 150px;
+}

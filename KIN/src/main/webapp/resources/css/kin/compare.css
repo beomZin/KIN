@@ -1,0 +1,151 @@
+@charset "UTF-8";
+input [type=button] {
+	cursor:pointer;
+}
+
+.p {
+	display: block;
+	width: 1100px;
+	min-height: 850px;
+	font-family: 맑은고딕, "Malgun Gothic", dotum, gulim, sans-serif;
+	margin: 0 auto;
+	position:relative;
+}
+
+.bottom {
+	background: #4b4a6e;
+	height: 150px;
+	margin-top: 20px;
+}
+
+.title {
+	height: 30px;
+	line-height: 30px;
+	margin: 20px 20px 20px 60px;
+	color: #262626;
+	font-size: 22.4px;
+	font-weight: bold;
+	letter-spacing: -.05em;
+	display: block;
+	float: left;
+}
+
+.GBN {
+	opacity: 0.6;
+	letter-spacing: -.1em;
+	font-size: 12px;
+	position : absolute;
+	right: 5%;
+    top: 10px;
+}
+
+.tInfo {
+	display: inline-block;
+	vertical-align: top;
+	margin-top: 40px;
+	width: 550px;
+	height: 100%;
+}
+
+#map {
+    margin-top: 60px;
+    margin-left: 20px;
+	display: inline-block;
+	vertical-align: top;
+	width: 450px;
+	height: 500px;
+}
+
+table {
+	border-collapse:collapse;
+	text-align: center;
+	width:100%;
+	line-height: 50px;
+	padding : 20px 10px 20px 10px;
+}
+
+th {
+	border-bottom: 2px solid #f1f1f1;
+	font-size: 16.8px;
+}
+
+td {
+	border-bottom: 1px solid #f1f1f1;
+	font-size: 15.4px;
+	padding: 10px;
+}
+
+.ico {
+	height: 32px;
+	margin-top: 20px;
+	cursor: pointer;
+}
+
+.addrD {
+	font-size: 14px;
+	line-height: 13.5px;
+}
+
+.bs td:nth-child(2) {
+	width : 60px;
+	font-size : 14px;
+}
+
+.tBasic {
+	margin-top: 30px;
+}
+
+.tBasic th:nth-child(2) {
+	font-size: 14px;
+	color: #959595;
+	font-weight: normal;
+}
+
+.tBasic tr td:nth-child(2) {
+	color: #959595;
+}
+
+.tBasic tr td:nth-child(2) {
+	border-left: 2px solid #f1f1f1;
+	border-right: 2px solid #f1f1f1;
+}
+
+
+
+.tStaff td, .a {
+	border-left: 2px solid #f1f1f1;
+}
+
+#basic {
+	position: absolute;
+	width: 800px;
+	left: calc(50% - 400px);
+}
+
+.tTitle {
+	border-bottom: 2px solid #262626;
+	text-align: left;
+}
+
+#staff {
+	position: absolute;
+	width: 1000px;
+	left: calc(50% - 500px);
+}
+
+.tViolation td {
+	text-align: left;
+}
+
+.tViolation thead th {
+	border-bottom: 2px solid #262626;
+}
+
+.tViolation {
+	width :90%;
+	white-space: pre-wrap;
+}
+
+.tViolation tbody tr th:nth-child(1) {
+	border-right: 2px solid #f1f1f1;
+}

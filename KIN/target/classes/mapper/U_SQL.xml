@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="u">
+<!-- U/SU 테이블 회원번호 비교-->
+<select id="batchSu" resultType="hashmap">
+	SELECT U_NO
+	FROM SU
+	MINUS
+	SELECT U_NO
+	FROM U
+	WHERE DEL_DT IS NULL
+	AND U_TP = 1
+</select>
+
+<!-- U/STAFF_INFO 테이블 회원번호 비교-->
+<select id="batchStaff" resultType="hashmap">
+	SELECT U_NO
+	FROM STAFF_INFO
+	MINUS
+	SELECT U_NO
+	FROM U
+	WHERE DEL_DT IS NULL
+	AND U_TP = 2
+</select>
+
+<!-- U/SU 테이블 회원 번호 비교 후 삭제 -->
+<delete id="deleteBatchSu" parameterType="java.util.ArrayList">
+	DELETE FROM SU
+	WHERE U_NO IN 
+	<foreach collection="list" item="item" open="(" close=")" separator=",">
+	#{item.U_NO}
+	</foreach>
+</delete>
+
+<!-- U/STAFF_INFO 테이블 회원 번호 비교 후 삭제 -->
+<delete id="deleteBatchStaff" parameterType="java.util.ArrayList">
+	DELETE FROM STAFF_INFO
+	WHERE U_NO IN 
+	<foreach collection="list" item="item" open="(" close=")" separator=",">
+	#{item.U_NO}
+	</foreach>
+</delete>
+
+<!-- 회원가입 - 이메일 중복 여부 -->
+<select id="checkEmailYn" parameterType="hashmap" resultType="Integer">
+	SELECT COUNT(*) AS CNT
+	FROM U
+	WHERE EMAIL = #{email}
+</select>
+
+<!-- 회원정보수정 - 이메일 중복 여부 -->
+<select id="updateEmailYn" parameterType="hashmap" resultType="Integer"  >
+	SELECT COUNT(*) AS CNT
+	FROM U
+	WHERE U_NO != #{uNo}
+	AND EMAIL = #{email}
+</select>
+
+<select id="getU" parameterType="hashmap" resultType="hashmap">
+	SELECT U.U_NO, U.ID, U.NICK, U.NM, U.U_TP, U.EMAIL, U.CEL, UD.DIS_NO, D.DIS_NM
+	FROM U LEFT OUTER JOIN U_DIS UD
+	                    ON U.U_NO = UD.U_NO
+	       LEFT OUTER JOIN DIS D
+	                    ON UD.DIS_NO = D.DIS_NO
+	WHERE U.U_NO = #{uNo}
+</select>
+
+<select id="idCnt" parameterType="hashmap" resultType="Integer" >
+	SELECT COUNT(*) AS CNT
+	FROM U
+	WHERE ID = #{id}
+</select>
+
+<insert id="insertSU" parameterType="hashmap">
+	INSERT ALL
+	INTO U(U_NO, ID, PW, NM, NICK, CEL, EMAIL, U_TP)
+	VALUES (U_SEQ.NEXTVAL, #{id}, #{pw}, #{nm}, #{nick}, #{cel}, #{email}, #{uTp})
+	INTO SU(U_NO, KIN_NO, ATT_NM)
+	VALUES (U_SEQ.NEXTVAL, #{no}, #{attNm})
+	INTO U_DIS(U_NO, DIS_NO)
+	VALUES (U_SEQ.NEXTVAL, #{disNo})
+	SELECT '' 
+	FROM DUAL
+</insert>
+
+<insert id="insertU" parameterType="hashmap">
+	INSERT ALL 
+	INTO U(U_NO, ID, PW, NM, NICK, CEL, EMAIL, U_TP)
+	VALUES(U_SEQ.NEXTVAL, #{id}, #{pw}, #{nm}, #{nick}, #{cel}, #{email}, 3)
+	INTO U_DIS(U_NO, DIS_NO) 
+	VALUES (U_SEQ.NEXTVAL, #{disNo})
+	SELECT '' 
+	FROM DUAL
+</insert>
+
+<update id="updateGeneral" parameterType="hashmap" >
+	UPDATE U
+	SET NM = #{nm}, NICK = #{nick}, CEL = #{cel}, EMAIL = #{email} 
+	<if test="pw != null and pw != ''">
+		, PW = #{pw}
+	</if>
+	WHERE U_NO = #{uNo}
+</update>
+
+<update id="updateSU" parameterType="hashmap">
+	UPDATE SU SET ATT_NM = #{attNm}
+	WHERE U_NO = #{uNo}
+</update>
+
+<update id="updateU" parameterType="hashmap">
+	UPDATE U_DIS SET DIS_NO = #{disNo}
+	WHERE U_NO = #{uNo}
+</update>
+
+<update id="deleteU" parameterType="hashmap">
+	UPDATE U SET DEL_DT = SYSDATE
+	WHERE U_NO = #{uNo} 
+</update>
+
+<!-- 카카오를 이용한 회원가입 -->
+<insert id="insertU_kakao" parameterType="hashmap">
+	INSERT INTO U(U_NO, ID, PW, NM, EMAIL, CEL, U_TP)
+	VALUES(U_SEQ.NEXTVAL, #{id}, #{pw}, #{nm}, 
+	       #{email}, #{cel}, #{uTp})
+</insert>
+
+<!-- 카카오를 통해 회원가입한 유저 지역구번호 등록 -->
+<insert id="insertDIS" parameterType="hashmap">
+	INSERT INTO U_DIS(U_NO, DIS_NO)
+	VALUES(#{uNo}, #{disNo})
+</insert>
+</mapper>

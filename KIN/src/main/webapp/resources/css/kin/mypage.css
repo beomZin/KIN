@@ -1,0 +1,128 @@
+body {
+    min-width: 320px;
+}
+
+div {
+    display: block;
+    padding: 0;
+    text-align: center;
+    border-radius: 2px;
+}
+
+h1 {
+    margin: 0;
+}
+
+.bg {
+    width: 1100px;
+    margin: 0 auto;
+    background-color: #fff;
+    min-height: 67px;
+}
+
+.bottom {
+	background: #4b4a6e;
+	height: 146px;
+	position: relative;
+    display: block;
+    margin-top: 20px;
+}
+
+.mypage {
+    position: relative;
+    width: 1000px;
+    margin: 40px auto;
+    text-align: center;
+    color: #262626;
+}
+
+.userInfo {
+    width: 400px;
+    height: 150px;
+    margin: 20px;
+}
+
+.tUser {
+	display: inline-table;
+	vertical-align: top;
+	width: 400px;
+	height: 150px;
+	font-family: 맑은고딕, "Malgun Gothic", dotum, gulim, sans-serif;
+	margin: 0 auto;
+}
+
+
+.tUser th{
+	width: 90px;
+	padding-left: 50px;		
+	text-align: left;
+}
+
+.tUser td{
+	text-align: left;
+}
+
+.set {
+    width: 1000px;
+    text-align: center;
+    color: #262626;
+}
+
+.userInfo, .userAdd {
+    display: inline-block;
+    vertical-align: top;
+    border: 1px solid #e1e1fb;
+    border-radius: 20px;
+}
+
+.userAdd {
+	width: 840px;
+    height: 50px;
+    line-height: 50px;
+    color: #262626;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.userInfo:hover, .userAdd:hover {
+	border: 1px solid #6c69bc; 
+}
+
+.set_div {
+	display: inline-block;
+    width: 250px;
+    height: 300px;
+    margin: 20px;
+    cursor: pointer;
+}
+
+.set_ico {
+    width: 150px;
+    margin: 30px 30px 30px;
+}
+
+.set_title {
+    display: inline-block;
+    color: #262626;
+    font-size: 16.8px;
+    font-weight: bold;
+}
+
+.GBN {
+    opacity: 0.6;
+    letter-spacing: -.1em;
+    font-size: 12px;
+    position : absolute;
+    right: 10%;
+    top: 5%;
+ }
+ 
+ .drop  {
+    opacity: 0.6;
+    letter-spacing: -.1em;
+    font-size: 12px;
+    position : absolute;
+    right: 30%;
+    top: -26%;
+    cursor: pointer;
+ }
